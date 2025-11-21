@@ -1,0 +1,14 @@
+document.getElementById("searchBtn").addEventListener("click", function() {
+
+fetch("superheroes.php")
+    .then(function(response) {
+    return response.text();
+})
+    .then(function(html) {
+        alert(html);
+    })
+    .catch(function(erro){
+    console.error(erro);
+});
+
+});
