@@ -63,10 +63,45 @@ $superheroes = [
   ], 
 ];
 
+$query = filter_input(INPUT_GET, 'query', FILTER_UNSAFE_RAW);
+$query = trim($query);
+
+//function normalises strings for comparison
+function normalize($str) {
+    // removes all non-alphanumeric chars
+    return mb_strtolower(preg_replace("/[^a-z0-9]+/i", '', $str));
+}
+
+//returns full list if no query is found.
+if($query === ""){
+    echo "<ul>";
+    foreach($superheroes as $superhero){
+        echo "<li>". htmlspecialchars($superhero['alias'], ENT_QUOTES, 'UTF-8') . "</li>";
+    }
+    echo "</ul>";
+    exit;
+}
+
+$found = null;
+// If query exists → search by alias or name 
+
+$normalizedQuery = normalize($query);
+foreach($superheroes as $superhero){
+    if (normalize($superhero['alias']) === $normalizedQuery ||
+        normalize($superhero['name']) === $normalizedQuery){
+        $found = $superhero;
+        break;
+    }
+}
+// if no match is found
+if(!$found){
+    echo '<div class="err">Superhero not found</div>';
+    exit;
+}
+//if found it returns the formatted html.
+echo "<h3>" . htmlspecialchars($found['alias'], ENT_QUOTES, 'UTF-8') . "</h3>";
+echo "<h4>A.K.A " . htmlspecialchars($found['name'], ENT_QUOTES, 'UTF-8') . "</h4>";
+echo "<p>" . htmlspecialchars($found['biography'], ENT_QUOTES, 'UTF-8') . "</p>";
+
 ?>
 
-<ul>
-<?php foreach ($superheroes as $superhero): ?>
-  <li><?= $superhero['alias']; ?></li>
-<?php endforeach; ?>
-</ul>
